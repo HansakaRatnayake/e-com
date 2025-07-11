@@ -7,6 +7,8 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth.routes';
+import productRoutes from "./routes/product.routes";
+import {connectCloudinary} from "./config/cloudinary";
 
 
 // Load environment variables
@@ -17,6 +19,8 @@ const app: Application = express();
 
 // Connect to MongoDB
 connectDB();
+// Connect to Cloudinary
+connectCloudinary();
 
 // Middleware
 app.use(helmet());
@@ -35,12 +39,13 @@ app.get('/api/health', (_req, res) => {
 });
 console.log('found.....');
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 
 // Error handling middleware (should be last)
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
