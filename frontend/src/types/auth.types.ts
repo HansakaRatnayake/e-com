@@ -38,3 +38,13 @@ export interface AuthContextType {
     logout: () => Promise<void>;
     isAuthenticated: boolean;
 }
+
+export interface Address {
+    _id?: string;
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
+    isDefault: boolean;
+}

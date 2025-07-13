@@ -7,6 +7,13 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 import authRoutes from './routes/auth.routes';
+import productRoutes from './routes/product.routes';
+import categoryRoutes from './routes/category.routes';
+import fs from 'fs';
+import path from 'path';
+import cartRoutes from './routes/cart.routes';
+import orderRoutes from './routes/order.routes';
+
 
 
 // Load environment variables
@@ -20,11 +27,19 @@ connectDB();
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5175',
+    credentials: true
+}));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+const uploadsDir = path.join(__dirname, '..', 'uploads', 'products');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Static files
 app.use('/uploads', express.static('uploads'));
@@ -36,11 +51,17 @@ app.get('/api/health', (_req, res) => {
 console.log('found.....');
 app.use('/api/auth', authRoutes);
 
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+
 // Error handling middleware (should be last)
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
